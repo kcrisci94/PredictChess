@@ -20,6 +20,6 @@ archivesList[len(archivesList)-1] = archivesList[len(archivesList)-1].rstrip("\"
 for i in range(len(archivesList)-1):
     url = baseUrl + archivesList[i+1] + "/pgn"
     filename = archivesList[i+1].replace("/", "-")
-    urllib.request.urlretrieve(url, "mygames" + filename + ".pgn") #change
+    urllib.request.urlretrieve(url, "./mygames/mygames" + filename + ".pgn") #change
     print(filename + ".pgn has been downloaded.")
 print ("All files have been downloaded.")
