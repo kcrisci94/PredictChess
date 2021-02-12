@@ -10,13 +10,13 @@ class Game extends React.Component {
       super();
       this.state = {
 	  board: {},
-	  position: 'start' , 
+	  position: 'start',
+	  moves: []
       };
    }
    componentDidMount() {
       const chess = Chess();
-      this.setState({board: chess});
-      this.setState({position: 'start'});
+      this.setState({board: chess, position: 'start', moves: this.props.moves});
    }
   
    handleMove = (move: ShortMove) => { 
@@ -35,6 +35,9 @@ class Game extends React.Component {
 	   onDrop={(move) => this.handleMove({from: move.sourceSquare, to: move.targetSquare, promotion: "q"})
 	   }
          />
+	 <div>
+            <p>{this.props.moves}</p>
+	 </div>
        </div>
      );
    }
