@@ -94,10 +94,10 @@ var Chess = function(fen) {
 
   var RANK_1 = 7
   var RANK_2 = 6
-  var RANK_3 = 5
-  var RANK_4 = 4
-  var RANK_5 = 3
-  var RANK_6 = 2
+//  var RANK_3 = 5
+//  var RANK_4 = 4
+//  var RANK_5 = 3
+//  var RANK_6 = 2
   var RANK_7 = 1
   var RANK_8 = 0
 
@@ -323,8 +323,8 @@ var Chess = function(fen) {
     }
 
     if (
-      (tokens[3][1] == '3' && tokens[1] == 'w') ||
-      (tokens[3][1] == '6' && tokens[1] == 'b')
+      (tokens[3][1] === '3' && tokens[1] === 'w') ||
+      (tokens[3][1] === '6' && tokens[1] === 'b')
     ) {
       return { valid: false, error_number: 11, error: errors[11] }
     }
@@ -438,8 +438,8 @@ var Chess = function(fen) {
 
     /* don't let the user place more than one king */
     if (
-      piece.type == KING &&
-      !(kings[piece.color] == EMPTY || kings[piece.color] == sq)
+      piece.type === KING &&
+      !(kings[piece.color] === EMPTY || kings[piece.color] === sq)
     ) {
       return false
     }

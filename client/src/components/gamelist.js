@@ -9,8 +9,17 @@ class Gamelist extends React.Component {
       };
    }
    componentDidMount() {
-      var game = ["e4", "e5", "c3", "Nf6", "f3", "d5", "Qe2", "dxe4", "fxe4", "Bc5"]
-      this.setState({game: game });
+      fetch('/games/mygames', {
+         method: 'GET',
+         headers: {'Content-Type': 'application/json; charset=utf-8'},
+      })
+      .then(res => res.json())
+      .then(stats => {
+         console.log(stats);
+        //this.setState({game: game });
+      })
+      .catch(err => {console.log("Error in fetch... ", err)});
+
    }
   
    

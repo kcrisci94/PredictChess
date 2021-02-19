@@ -3,7 +3,7 @@ import "../App.css";
 import "./game.css";
 import Chessboard from "chessboardjsx";
 import Controls from "./controls";
-import { ChessInstance, ShortMove } from "chess.js"
+import { ShortMove } from "chess.js"
 const {Chess} = require("./chess.js");
 
 
