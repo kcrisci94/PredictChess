@@ -26,5 +26,4 @@ class Page extends Component {
       );
    }
 }
-
 export default Page;

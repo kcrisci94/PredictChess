@@ -3,7 +3,7 @@ const mysql = require('mysql');
 const bodyParser = require('body-parser');
 const app = express();
 const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
-
+const fetch = require("node-fetch");
 /*Use middleware to process JSON for POST requests*/
 app.use(bodyParser.json());
 
@@ -32,17 +32,43 @@ app.get('/games/mygames', (req, res) => {
    const Http = new XMLHttpRequest();
    const username = 'kcrisci';
    const url="https://api.chess.com/pub/player/" + username + "/games/archives";
+   var array = {};
+   var games = [];
+   var urls = [];
    Http.open("GET", url);
-   Http.send();
+   Http.send(null);
    Http.onreadystatechange = (e) => {
-      if(Http.readyState === 4) {
+      if(Http.readyState === 4 && Http.status === 200) {
          console.log("Pulled all Archives for user: ", username);
          var json = JSON.parse(Http.responseText);
-         var results = json.results;
-         res.send(json);
+	 Promise.all(json.archives.map(async (id) => {
+	      const response = await fetch(id).catch(e => {console.log("error")});
+	      if(response){
+		 var res = [];
+                 try{
+	            res = response.json();
+		 }catch(e){
+                    console.log("error");
+		 }
+	      }
+	      return res;  
+	 })).then(data => {
+		 for(var j = 0; j<data.length; j++){
+	            for(var k = 0; k<data[j].games.length; k++){
+                       games.push(data[j].games[k]);
+		    }
+		 }
+
+	      array.games = games;
+	      res.send(array.games);
+	 }).catch(function(error){
+            console.log(error);
+	 });
       }
-   }
+   }   
+      
 });
+
 
 //this is the port number specified in client .json file
 const port = 5000;

@@ -3,7 +3,7 @@ import "../App.css";
 import "./game.css";
 import Chessboard from "chessboardjsx";
 import Controls from "./controls";
-import { ShortMove } from "chess.js"
+import { ChessInstance, ShortMove } from "chess.js"
 const {Chess} = require("./chess.js");
 
 
@@ -70,5 +70,4 @@ class Game extends React.Component {
      );
    }
 }
-
 export default Game;
