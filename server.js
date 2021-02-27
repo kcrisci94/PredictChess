@@ -43,16 +43,9 @@ app.get('/games/mygames', (req, res) => {
          var json = JSON.parse(Http.responseText);
 	 Promise.all(json.archives.map(async (id) => {
 	      const response = await fetch(id).catch(e => {console.log("error")});
-	      if(response){
-		 var res = [];
-                 try{
-	            res = response.json();
-		 }catch(e){
-                    console.log("error");
-		 }
-	      }
+	      var res = await response.json();
 	      return res;  
-	 })).then(data => {
+	 })).then( data => {
 		 for(var j = 0; j<data.length; j++){
 	            for(var k = 0; k<data[j].games.length; k++){
                        games.push(data[j].games[k]);
