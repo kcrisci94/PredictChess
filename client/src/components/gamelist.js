@@ -17,8 +17,8 @@ class Gamelist extends React.Component {
       })
       .then(res => res.json())
       .then(stats => {
-	 var re = /\. (O-O|[A-R][a-h][1-8][a-h][1-8]|[a-h][1-8]\=[A-R]|[a-h][1-8]|[A-R][a-h][1-8]|[A-R][a-h][a-h][1-8]|[A-R][1-8][a-h][1-8]|[a-h]x[a-h][1-8]|[A-R]x[a-h][1-8]|[A-R][a-h]x[a-h][1-8])\+?/g;
-	 var array = [];
+//	 var re = /\. (O-O|[A-R][a-h][1-8][a-h][1-8]|[a-h][1-8]\=[A-R]|[a-h][1-8]|[A-R][a-h][1-8]|[A-R][a-h][a-h][1-8]|[A-R][1-8][a-h][1-8]|[a-h]x[a-h][1-8]|[A-R]x[a-h][1-8]|[A-R][a-h]x[a-h][1-8])\+?/g;
+//	 var array = [];
 //         stats[1].pgn.replace(re, (s, match) => {array.push(s.substr(2));}); 
 //         console.log(array);
          this.setState({alllist: stats });
