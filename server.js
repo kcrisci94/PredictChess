@@ -189,7 +189,21 @@ app.post('/getgames', (req, res) => {
    getData(url, username);
 });
 
-
+/*gets list of user games from app database of downloaded games*/
+app.post('/games/mygames', (req, res) => {
+  const uname = req.body.username;
+  const sql = `SELECT * FROM games WHERE whiteName='${uname}' OR blackName='${uname}'`;
+  db.query(sql, (err, result) => {
+     if(err) throw err;
+     if(result){
+        console.log("found games");
+        res.send(result);
+     }else{
+        console.log("no games found");
+        res.send(null);
+     }
+  });
+});
 //this is the port number specified in client .json file
 const port = 5000;
 
