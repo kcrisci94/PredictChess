@@ -1,9 +1,13 @@
 import React, { Component } from 'react';
+
 import Game from './game';
 import Gamelist from './gamelist';
 import Login from './login';
 import Signup from './signup';
 import Options from './options';
+import './page.css';
+
+const {Chess} = require("./chess.js");
 
 /**
  * Page
@@ -15,11 +19,25 @@ class Page extends Component {
       this.state = {
          title: 'Login',
          userInfo: {}, 
-         moves: []
+         board: {}, 
+         moves: [],
+         position: 'start',
+         current: -1, 
+         history: []
       };
    }
+
+   componentDidMount() {
+      const chess = Chess();
+      this.setState({board: chess});
+   }
+  
    startGame = (moves) => {
-      this.setState({moves: moves});
+      this.setState({moves: moves, position: 'start', current: -1, history: [], board: Chess()});
+   }
+
+   updateGame = (position, currentmove, history, board) => {
+      this.setState({position: position, current: currentmove, history: history, board: board})
    }
    
    editUser = (stats) => {
@@ -48,11 +66,15 @@ class Page extends Component {
                   handler={this.editUser}/> : null}
 
             {this.state.title === 'Game' ?
-                  <div>
-                     <Game moves={this.state.moves}/>
-                     {<Options chess_uname={this.state.userInfo.chessUsername}/> }
-               <Gamelist startGame={this.startGame}/></div> :null}
-         </div>
+               <div>
+                  <Game updateGame={this.updateGame} position={this.state.position} moves={this.state.moves} 
+                        currentmove={this.state.current} history={this.state.history} board={this.state.board}/>
+                  {<Options chess_uname={this.state.userInfo.chessUsername}/> }
+                  <div className='moves'>
+                     <p>{this.state.moves.join(" ")}</p>
+                  </div>
+                  <Gamelist startGame={this.startGame} username={this.state.userInfo.chessUsername}/></div> :null}
+               </div>
       );
    }
 }
