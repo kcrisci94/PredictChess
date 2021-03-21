@@ -1,0 +1,11 @@
+.lists{
+    width: 40vw;
+    margin: 0 auto;
+}
+.lists table{
+    text-align: left;
+}
+.lists table tr:hover{
+   background-color: rgb(238, 206, 158);
+   cursor: pointer;
+}
