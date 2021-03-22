@@ -5,6 +5,7 @@ import Gamelist from './gamelist';
 import Login from './login';
 import Signup from './signup';
 import Options from './options';
+import SelectDisplay from './selectdisplay';
 import './page.css';
 
 const {Chess} = require("./chess.js");
@@ -23,7 +24,9 @@ class Page extends Component {
          moves: [],
          position: 'start',
          current: -1, 
-         history: []
+         history: [],
+         alllist: [],
+         display: []
       };
    }
 
@@ -46,6 +49,31 @@ class Page extends Component {
          userInfo: stats,
          title: "Game",
       });
+      fetch('/games/mygames', {
+         method: 'POST',
+         headers: {'Content-Type': 'application/json; charset=utf-8'},
+         body: JSON.stringify({username: stats.chessUsername})
+      })
+      .then(res => res.json())
+      .then(stats => {
+         this.setAlllist(stats);
+      })
+      .catch(err => {console.log("Error in fetch... ", err)});
+   }
+   
+   setAlllist = (stats) => {
+      this.setState({alllist: stats});
+      this.setDisplay();
+   }
+
+   setDisplay = () => {
+      let list = this.state.alllist;
+      let display = [];
+      let j;
+      for(j=list.length-1; j>list.length-11; j--){
+         display.push(list[j]);
+      }
+      this.setState({display: display});
    }
 
    toSignup = () => {
@@ -54,6 +82,18 @@ class Page extends Component {
       });
    }
    
+   updateDisplay = (username) => {
+      fetch('/updateDisplay', {
+         method: 'POST',
+         headers: {'Content-Type': 'application/json; charset=utf-8'},
+         body: JSON.stringify({username: username})
+      })
+      .then(res => res.json())
+      .then(stats => {
+         this.setAlllist(stats);
+      }).then(() => {this.setDisplay();})
+      .catch(err => {console.log("Error in fetch... ", err)});
+   }
    render() {
       return (
          <div id="board">
@@ -67,14 +107,21 @@ class Page extends Component {
 
             {this.state.title === 'Game' ?
                <div>
-                  <Game updateGame={this.updateGame} position={this.state.position} moves={this.state.moves} 
-                        currentmove={this.state.current} history={this.state.history} board={this.state.board}/>
-                  {<Options chess_uname={this.state.userInfo.chessUsername}/> }
-                  <div className='moves'>
-                     <p>{this.state.moves.join(" ")}</p>
+                  <div className="flex-horiz">
+                     <Options chess_uname={this.state.userInfo.chessUsername} userid={this.state.userInfo.id}/> 
+                     <div className="flex-column">
+                        <Game updateGame={this.updateGame} position={this.state.position} moves={this.state.moves} 
+                              currentmove={this.state.current} history={this.state.history} board={this.state.board}/>
+                        <div className='moves'>
+                           <p>{this.state.moves.join(" ")}</p>
+                        </div>
+                        <Gamelist startGame={this.startGame} username={this.state.userInfo.chessUsername} setAlllist={this.setAlllist} setDisplay={this.setDisplay} display={this.state.display}/>
+                     </div>
+                     <SelectDisplay userid={this.state.userInfo.id} updateDisplay={this.updateDisplay}/>
                   </div>
-                  <Gamelist startGame={this.startGame} username={this.state.userInfo.chessUsername}/></div> :null}
-               </div>
+                  
+               </div> :null}
+         </div>
       );
    }
 }

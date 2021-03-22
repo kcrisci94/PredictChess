@@ -31,7 +31,7 @@ db.connect((err) => {
 /* query dataset to look for the latest date that all games were downloaded to limit api calls
  * only add urls that are not already in the database
  */
-const getData = (url, username) => {
+const getData = (url, username, userid) => {
       let i, games = []; //Games array to hold the list of games to parse and add to database
 
       //Sql to get list of all dates of games that have been downloaded by the player
@@ -91,6 +91,15 @@ const getData = (url, username) => {
             //Parse the array of games and add to the database
             if(games.length != 0){
                parseData(games);
+               let newsql1 = `INSERT INTO addedUsers(added_by, added_user) VALUES('${userid}', '${username}')`
+               db.query(newsql1, (err, result) => {
+                  if(err){
+                     console.log("error adding to addedUsers table \n" + err);
+                  }else{
+                     console.log(result);
+                  }
+               });
+
             }else{
                console.log("No games to add.")
             }
@@ -181,12 +190,14 @@ app.post('/checkUser', (req, res) => {
 app.post('/getgames', (req, res) => {
    const Http = new XMLHttpRequest();
    const username = req.body.username;
+   const userid = req.body.userID;
    const url="https://api.chess.com/pub/player/" + username + "/games/archives";
    console.log(url)
    var array = {};
    var games = [];
    var urls = [];
-   getData(url, username);
+   getData(url, username, userid);
+
 });
 
 /*gets list of user games from app database of downloaded games*/
@@ -203,6 +214,38 @@ app.post('/games/mygames', (req, res) => {
         res.send(null);
      }
   });
+});
+
+/*gets a list of users that a user has added to their list of games*/
+app.post('/getAddedUsers', (req, res) => {
+   const userid = req.body.userid;
+   const sql = `SELECT added_user from addedUsers where added_by = '${userid}'`;
+   db.query(sql, (err, result) => {
+      if(err) throw err;
+      if(result){
+         console.log("found added users");
+         res.send(result);
+      }else{
+         console.log("no added users found");
+         res.send(null);
+      }
+   });
+});
+
+app.post('/updateDisplay', (req, res) => {
+   console.log("entering updateDisplay function")
+   const uname = req.body.username;
+   const sql = `SELECT * FROM games WHERE whiteName='${uname}' OR blackName='${uname}'`
+   db.query(sql, (err, result) => {
+      if(err) throw err;
+      if(result){
+         console.log("found user's games");
+         res.send(result);
+      }else{
+         console.log("no games found");
+         res.send(null);
+      }
+   });
 });
 //this is the port number specified in client .json file
 const port = 5000;

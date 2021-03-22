@@ -4,6 +4,7 @@
 }
 .lists table{
     text-align: left;
+    margin: 0 auto;
 }
 .lists table tr:hover{
    background-color: rgb(238, 206, 158);

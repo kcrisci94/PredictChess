@@ -41,7 +41,6 @@ class Game extends React.Component {
       return (
        <div className="flex-center">
          <div>
-            <h1>Random Chess</h1>
             <Chessboard
               width={400}
               position={position}
@@ -49,9 +48,8 @@ class Game extends React.Component {
                  (move) => this.handleMove({from: move.sourceSquare, to: move.targetSquare, promotion: "q"})
               }
             />
-	    <Controls nextMove={nextMove} nextHandler={this.handleMove} prevHandler={this.goToLast}/> 
-	    </div>
-	
+            <Controls nextMove={nextMove} nextHandler={this.handleMove} prevHandler={this.goToLast}/> 
+	      </div>
       </div>
      );
    }
