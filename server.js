@@ -247,6 +247,110 @@ app.post('/updateDisplay', (req, res) => {
       }
    });
 });
+
+app.post('/analyzeUser', (req, res) => {
+   const uname = req.body.username;
+   console.log("Analyzing user: ", uname);
+   const sql = `SELECT * FROM games WHERE whiteName='${uname}' OR blackName='${uname}'`
+   db.query(sql, (err, result) => {
+      if(err) throw err;
+      let captures = {};
+      if(result){
+         captures = getNumCaptures(result, uname);
+         res.send(captures);
+      }else{
+         console.log("Can't Analyze User");
+         res.send(null);
+      }
+   });
+});
+
+const getNumCaptures = (result, uname) => {
+   let i = 0; 
+   let counts = {queen: 0, knight: 0, bishopw: 0, bishopb: 0, rook: 0, king: 0, a: 0, b: 0, c: 0, d: 0, e:0, f: 0, g: 0, h:0}
+   let playermoves = [];
+   for(i = 0; i < result.length; i++){
+      let game = result[i];
+      let allmoves = game.moves.split(" ");
+      let j = 0;
+      if(game.whiteName == uname){
+         for(j = 0; j < allmoves.length; j++){
+            if(j % 2 == 0){
+                playermoves.push(allmoves[j]);
+            }
+         }
+      }else{
+         for(j = 0; j < allmoves.length; j++){
+            if(j % 2 != 0){
+                playermoves.push(allmoves[j]);
+            }
+         }
+      }
+      //console.log(playermoves);
+   
+      for(j = 0; j < playermoves.length; j++){
+         if(playermoves[j].includes("x")){
+            let pieceidx = playermoves[j].indexOf("x"); //get index of capturing piece
+            if(pieceidx == 2){
+               pieceidx == 0;
+            }else{
+               pieceidx = pieceidx-1;
+            }
+            let piece = playermoves[j][pieceidx];
+            if(piece == piece.toLowerCase()){ //pawn capture
+               if(piece == "a"){
+                  counts.a = counts.a + 1;
+               }else if(piece == "b"){
+                  counts.b = counts.b + 1;
+               }else if(piece == "c"){
+                  counts.c = counts.c + 1;
+               }else if(piece == "d"){
+                  counts.d = counts.d + 1;
+               }else if(piece == "e"){
+                  counts.e = counts.e + 1;
+               }else if(piece == "f"){
+                  counts.f = counts.f + 1;
+               }else if(piece == "g"){
+                  counts.g = counts.g + 1;
+               }else if(piece == "h"){
+                  counts.h = counts.h + 1;
+               }
+            }else{ // non-pawn capture
+               if(piece == "N"){
+                  counts.knight = counts.knight + 1;
+               }else if(piece == "R"){
+                  counts.rook = counts.rook + 1;
+               }else if(piece == "Q"){
+                  counts.queen = counts.queen + 1;
+               }else if(piece == "B"){
+                  let square = playermoves[j].slice(pieceidx + 2);
+                  if(square[0] == "a" || square[0] == "c" || square[0] == "e" || square[0] == "g"){
+                     if(square[1] % 2 == 0){
+                        counts.bishopw = counts.bishopw + 1;
+                     }else{
+                        counts.bishopb = counts.bishopb + 1;
+                     }
+                  }else if(square[0] == "b" || square[0] == "d" || square[0] == "f" || square[0] == "h"){
+                     if(square[1] % 2 == 0){
+                        counts.bishopb = counts.bishopb + 1;
+                     }else{
+                        counts.bishopw = counts.bishopw + 1;
+                     }
+
+                  }
+               }else if(piece == "K"){
+                  counts.king = counts.king + 1;
+               }
+            }
+         }
+      }
+      playermoves = [];
+   }
+   return counts;
+   //res.send(result);
+
+}
+
 //this is the port number specified in client .json file
 const port = 5000;
 

@@ -11,7 +11,7 @@ class Gamelist extends React.Component {
        <div className="lists">
           <table>
             <thead>
-               <tr><th>White Player</th><th>Black Player</th><th>Date Played</th></tr>
+               <tr><th>White Player</th><th>Black Player</th><th>Date Played</th><th>Winner</th></tr>
             </thead>
             <tbody>
 	     {list[0] ? list.map((item, index) => 
@@ -26,10 +26,14 @@ class Gamelist extends React.Component {
                    <td>
                         {item.datePlayed}
                    </td>
+                   <td> 
+                        {item.winner}
+                   </td>
                 </tr>
              ) : null}
              </tbody>
           </table>
+          <button type="button" className="getMyGames" onClick={this.props.getmygames}>Refresh My Games</button>
        </div>
      );
    }

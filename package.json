@@ -16,6 +16,7 @@
     "nodemon": "^1.14.6"
   },
   "dependencies": {
+    "canvasjs": "github:vasilrimar/canvasjs",
     "chess.js": "^0.11.0",
     "chessboardjsx": "^2.4.2",
     "concurrently": "^3.5.1",
