@@ -117,6 +117,10 @@ class Page extends Component {
       })
       .then(res => res.json())
       .then(res => {
+         let totalcaptures = res.a + res.b + res.c + res.d +
+         res.e + res.f + res.g + res.h + res.queen + res.king +
+         res.rook + res.knight + res.bishopb + res.bishopw;
+
          let options = {
             animationEnabled: true,
             title:{
@@ -130,7 +134,7 @@ class Page extends Component {
             axisY2:{
                interlacedColor: "rgba(1,77,101,.2)",
                gridColor: "rgba(1,77,101,.1)",
-               title: "# of Captures"
+               title: "Percent of Captures"
             },
             data: [{
                type: "bar",
@@ -138,20 +142,20 @@ class Page extends Component {
                axisYType: "secondary",
                color: "#014D65",
                dataPoints: [
-                  { y: res.a, label: "a-pawn" },
-                  { y: res.b, label: "b-pawn" },
-                  { y: res.c, label: "c-pawn" },
-                  { y: res.d, label: "d-pawn" },
-                  { y: res.e, label: "e-pawn" },
-                  { y: res.f, label: "f-pawn" },
-                  { y: res.g, label: "g-pawn" },
-                  { y: res.h, label: "h-pawn" },
-                  { y: res.queen, label: "queen" },
-                  { y: res.king, label: "king" },
-                  { y: res.rook/2, label: "rook" },
-                  { y: res.knight/2, label: "knight" },
-                  { y: res.bishopb, label: "Black Bishop" },
-                  { y: res.bishopw, label: "White Bishop" }
+                  { y: (res.a/totalcaptures) * 100, label: "a-pawn" },
+                  { y: (res.b/totalcaptures) * 100, label: "b-pawn" },
+                  { y: (res.c/totalcaptures) * 100, label: "c-pawn" },
+                  { y: (res.d/totalcaptures) * 100, label: "d-pawn" },
+                  { y: (res.e/totalcaptures) * 100, label: "e-pawn" },
+                  { y: (res.f/totalcaptures) * 100, label: "f-pawn" },
+                  { y: (res.g/totalcaptures) * 100, label: "g-pawn" },
+                  { y: (res.h/totalcaptures) * 100, label: "h-pawn" },
+                  { y: (res.queen/totalcaptures) * 100, label: "queen" },
+                  { y: (res.king/totalcaptures) * 100, label: "king" },
+                  { y: ((res.rook/2)/totalcaptures) * 100, label: "rook" },
+                  { y: ((res.knight/2)/totalcaptures) * 100, label: "knight" },
+                  { y: (res.bishopb/totalcaptures) * 100, label: "Black Bishop" },
+                  { y: (res.bishopw/totalcaptures) * 100, label: "White Bishop" }
                ]
             }]}
             

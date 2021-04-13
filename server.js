@@ -114,6 +114,7 @@ const parseData = (data) => {
    var Black = /Black \"(.*?)\"/gm;
    var Winner = /[01]-[01]/;
    var Moves = /\. (O-O|[A-R][a-h][1-8][a-h][1-8]|[a-h][1-8]\=[A-R]|[a-h][1-8]|[A-R][a-h][1-8]|[A-R][a-h][a-h][1-8]|[A-R][1-8][a-h][1-8]|[a-h]x[a-h][1-8]|[A-R]x[a-h][1-8]|[A-R][a-h]x[a-h][1-8])\+?/g;
+   var Termination = /\[Termination \\".* checkmate\\"]/g;
    for(var j = 0; j<data.length; j++){
       for(var k = 0; k<data[j].games.length; k++){
          var string = data[j].games[k].pgn;
@@ -123,6 +124,7 @@ const parseData = (data) => {
          var winner = '';
          var moves = [];
          var numMoves;
+         var checkmate = (string.includes("checkmate")) ? "True":"False";
          string = string.replace(removenewlines, ''); //removes new lines from string
          string.replace(dateregex, (s, match) => {date = s.substring(7, 17).replace(/\./gm, '-');}); //parse date
          string.replace(White, (s, match) => {white = s.split('"')[1];}); //parse white player
@@ -130,9 +132,13 @@ const parseData = (data) => {
          string.replace(Winner, (s, match) => {winner = (s[0]==0)? "Black":"White"; }); //get winner
          string.replace(Moves, (s, match) => {moves.push(s.substr(2));}); //get moves (convert from array to a string to store)
          numMoves = moves.length;
-
-         var sql4 = `INSERT INTO games(url, datePlayed, whiteName, blackName, winner, numMoves, moves) values('${data[j].games[k].url}','${date}', '${white}',
-                       '${black}', '${winner}', '${numMoves}', '${moves.join(' ')}')`;
+         if(winner == 'White'){
+            winner = white;
+         }else{
+            winner = black;
+         }
+         var sql4 = `INSERT INTO games(url, datePlayed, whiteName, blackName, winner, numMoves, moves, checkmate) values('${data[j].games[k].url}','${date}', '${white}',
+                       '${black}', '${winner}', '${numMoves}', '${moves.join(' ')}', '${checkmate}')`;
          db.query(sql4, (err, result) => {
             if(err){
                console.log("error inserting game \n" + err);
