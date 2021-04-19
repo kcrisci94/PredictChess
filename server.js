@@ -4,6 +4,8 @@ const bodyParser = require('body-parser');
 const app = express();
 const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 const fetch = require("node-fetch");
+const { Chess } = require('./client/src/components/chess.js');
+
 /*Use middleware to process JSON for POST requests*/
 app.use(bodyParser.json());
 
@@ -114,10 +116,10 @@ const parseData = (data) => {
    var Black = /Black \"(.*?)\"/gm;
    var Winner = /[01]-[01]/;
    var Moves = /\. (O-O|[A-R][a-h][1-8][a-h][1-8]|[a-h][1-8]\=[A-R]|[a-h][1-8]|[A-R][a-h][1-8]|[A-R][a-h][a-h][1-8]|[A-R][1-8][a-h][1-8]|[a-h]x[a-h][1-8]|[A-R]x[a-h][1-8]|[A-R][a-h]x[a-h][1-8])\+?/g;
-   var Termination = /\[Termination \\".* checkmate\\"]/g;
    for(var j = 0; j<data.length; j++){
       for(var k = 0; k<data[j].games.length; k++){
          var string = data[j].games[k].pgn;
+         var fen = data[j].games[k].fen;
          var date = '';
          var white = '';
          var black = '';
@@ -137,8 +139,8 @@ const parseData = (data) => {
          }else{
             winner = black;
          }
-         var sql4 = `INSERT INTO games(url, datePlayed, whiteName, blackName, winner, numMoves, moves, checkmate) values('${data[j].games[k].url}','${date}', '${white}',
-                       '${black}', '${winner}', '${numMoves}', '${moves.join(' ')}', '${checkmate}')`;
+         var sql4 = `INSERT INTO games(url, datePlayed, whiteName, blackName, winner, numMoves, moves, finalpos, checkmate) values('${data[j].games[k].url}','${date}', '${white}',
+                       '${black}', '${winner}', '${numMoves}', '${moves.join(' ')}', '${fen}', '${checkmate}')`;
          db.query(sql4, (err, result) => {
             if(err){
                console.log("error inserting game \n" + err);
@@ -263,6 +265,15 @@ app.post('/analyzeUser', (req, res) => {
       let captures = {};
       if(result){
          captures = getNumCaptures(result, uname);
+         checkmates = [];
+         let i = 0;
+         for(i = 0; i < result.length; i++){
+            if(result[i].winner == uname && result[i].checkmate == "True"){
+               checkmates.push(result[i]);
+            }
+         }
+         checkmatePieces = getCheckmatePieces(checkmates);
+         console.log("Counts: ", checkmatePieces);
          res.send(captures);
       }else{
          console.log("Can't Analyze User");
@@ -355,6 +366,87 @@ const getNumCaptures = (result, uname) => {
    return counts;
    //res.send(result);
 
+}
+
+const getCheckmatePieces = (games) => {
+   let i = 0; 
+   let counts = {queen: 0, knight: 0, bishopw: 0, bishopb: 0, rook: 0, king: 0, a: 0, b: 0, c: 0, d: 0, e:0, f: 0, g: 0, h:0}
+   let chess;
+   for(i = 0; i < games.length; i++){
+      let pos = games[i].finalpos;
+      let posarray = pos.split(" ");
+      if(posarray[1] == "w"){
+         posarray[1] = "b";
+      }else{
+         posarray[1] = "w";
+      }
+      pos = posarray.join(" ");
+      
+      chess = new Chess(pos);
+      let moves = chess.moves();
+      let j;
+      for(j = 0; j < moves.length; j++){
+         if(moves[j].includes("x")){
+            let pieceidx = moves[j].indexOf("x");
+            if(pieceidx == 2){
+               pieceidx == 0;
+            }else{
+               pieceidx = pieceidx-1;
+            }
+            let piece = moves[j][pieceidx];
+            let location = moves[j].slice(-2);
+            if(chess.get(location) && (chess.get(location).type == 'K' || chess.get(location).type == 'k')){
+               if(piece == piece.toLowerCase()){ //pawn capture
+                  if(piece == "a"){
+                     counts.a = counts.a + 1;
+                  }else if(piece == "b"){
+                     counts.b = counts.b + 1;
+                  }else if(piece == "c"){
+                     counts.c = counts.c + 1;
+                  }else if(piece == "d"){
+                     counts.d = counts.d + 1;
+                  }else if(piece == "e"){
+                     counts.e = counts.e + 1;
+                  }else if(piece == "f"){
+                     counts.f = counts.f + 1;
+                  }else if(piece == "g"){
+                     counts.g = counts.g + 1;
+                  }else if(piece == "h"){
+                     counts.h = counts.h + 1;
+                  }
+               }else{ // non-pawn capture
+                  if(piece == "N"){
+                     counts.knight = counts.knight + 1;
+                  }else if(piece == "R"){
+                     counts.rook = counts.rook + 1;
+                  }else if(piece == "Q"){
+                     counts.queen = counts.queen + 1;
+                  }else if(piece == "B"){
+                     let square = moves[j].slice(pieceidx + 2);
+                     if(square[0] == "a" || square[0] == "c" || square[0] == "e" || square[0] == "g"){
+                        if(square[1] % 2 == 0){
+                           counts.bishopw = counts.bishopw + 1;
+                        }else{
+                           counts.bishopb = counts.bishopb + 1;
+                        }
+                     }else if(square[0] == "b" || square[0] == "d" || square[0] == "f" || square[0] == "h"){
+                        if(square[1] % 2 == 0){
+                           counts.bishopb = counts.bishopb + 1;
+                        }else{
+                           counts.bishopw = counts.bishopw + 1;
+                        }
+   
+                     }
+                  }else if(piece == "K"){
+                     counts.king = counts.king + 1;
+                  }
+               }
+            }
+         }
+      }
+
+   }
+   return counts;
 }
 
 //this is the port number specified in client .json file
