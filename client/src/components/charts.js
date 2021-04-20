@@ -4,8 +4,16 @@ import './charts.css';
 const CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
 class Controls extends React.Component {
+   top3Pieces = () => {
+      let length = this.props.chart1.data[0].dataPoints.length;
+      let options = this.props.chart1.data[0].dataPoints.slice(length - 3, length);
+      return options.reverse();
+   }
+
    render() {
       var options = this.props.chart1;  
+      let topCaptures = this.top3Pieces();
+      console.log(topCaptures);
       return (
         <div className="chart1">
         <CanvasJSChart
@@ -15,11 +23,11 @@ class Controls extends React.Component {
         <div className="results">
            <p>The Player's Top 3 Capturing Pieces are: 
            <ul>
-               {topCaptures.map((item, index) => 
-                  <li key={index} onClick={() => {this.props.updateDisplay(item.added_user);}}>
-                     {item.label}: {item.y}
-                  </li>
-               )}       
+           {topCaptures.map((item, index) => 
+              <li key={index} onClick={() => {this.props.updateDisplay(item.added_user);}}>
+                 {item.label}: {item.y}
+              </li>
+           )}       
            </ul>
            Try to take them out early, or block them with other pieces.
            </p>
