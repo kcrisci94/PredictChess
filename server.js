@@ -107,6 +107,7 @@ const getData = (url, username, userid) => {
       });
 }
 
+
 const parseData = (data) => {
    var removenewlines = /(\n)+/g;
    var dateregex = /\[Date \"(.*?)\"/gm;
@@ -114,6 +115,7 @@ const parseData = (data) => {
    var Black = /Black \"(.*?)\"/gm;
    var Winner = /[01]-[01]/;
    var Moves = /\. (O-O|[A-R][a-h][1-8][a-h][1-8]|[a-h][1-8]\=[A-R]|[a-h][1-8]|[A-R][a-h][1-8]|[A-R][a-h][a-h][1-8]|[A-R][1-8][a-h][1-8]|[a-h]x[a-h][1-8]|[A-R]x[a-h][1-8]|[A-R][a-h]x[a-h][1-8])\+?/g;
+   let openings = /openings\/.*UTCDate/g;
    for(var j = 0; j<data.length; j++){
       for(var k = 0; k<data[j].games.length; k++){
          var string = data[j].games[k].pgn;
@@ -122,6 +124,7 @@ const parseData = (data) => {
          var black = '';
          var winner = '';
          var moves = [];
+         var opening = ''
          var numMoves;
          string = string.replace(removenewlines, ''); //removes new lines from string
          string.replace(dateregex, (s, match) => {date = s.substring(7, 17).replace(/\./gm, '-');}); //parse date
@@ -129,10 +132,11 @@ const parseData = (data) => {
          string.replace(Black, (s, match) => {black = s.split('"')[1];}); //parse black player
          string.replace(Winner, (s, match) => {winner = (s[0]==0)? "Black":"White"; }); //get winner
          string.replace(Moves, (s, match) => {moves.push(s.substr(2));}); //get moves (convert from array to a string to store)
+         string.replace(openings, (s, match) => {opening = s.split('"')[0].split("/")[1]})
          numMoves = moves.length;
 
-         var sql4 = `INSERT INTO games(url, datePlayed, whiteName, blackName, winner, numMoves, moves) values('${data[j].games[k].url}','${date}', '${white}',
-                       '${black}', '${winner}', '${numMoves}', '${moves.join(' ')}')`;
+         var sql4 = `INSERT INTO games(url, datePlayed, whiteName, blackName, opening, winner, numMoves, moves) values('${data[j].games[k].url}','${date}', '${white}',
+                       '${black}', '${opening}', '${winner}', '${numMoves}', '${moves.join(' ')}')`;
          db.query(sql4, (err, result) => {
             if(err){
                console.log("error inserting game \n" + err);
@@ -143,7 +147,6 @@ const parseData = (data) => {
       }
    }
 }
-
 app.post('/createUser', (req, res) => {
    const fname = req.body.firstName;
    const lname = req.body.lastName;
