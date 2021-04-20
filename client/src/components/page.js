@@ -206,10 +206,7 @@ class Page extends Component {
                      <p>Please click the user that you want to analyze.</p>
                   </div>
                   <div className="flex-horiz">
-                     <div className="flex-column">
-                        <Game updateGame={this.updateGame} position={this.state.position} moves={this.state.moves} 
-                              currentmove={this.state.current} history={this.state.history} board={this.state.board}/>
-                     </div>
+                    
                      <SelectDisplay userid={this.state.userInfo.id} updateDisplay={this.updateDisplay} title={this.state.title} analyzeUser={this.analyzeUser}/>
                   </div>  
                </div> :null}
@@ -219,10 +216,7 @@ class Page extends Component {
                   <button type="button" className="analyze" onClick={this.game_mode}>View Games</button>
                   <p>Please click the user that you want to analyze.</p>
                   <div className="flex-horiz">
-                     <div className="flex-column">
-                        <Game updateGame={this.updateGame} position={this.state.position} moves={this.state.moves} 
-                              currentmove={this.state.current} history={this.state.history} board={this.state.board}/>
-                     </div>
+                     
                      <SelectDisplay userid={this.state.userInfo.id} updateDisplay={this.updateDisplay} title={this.state.title} analyzeUser={this.analyzeUser}/>
                   </div>  
                   <Charts chart1={this.state.chart1} />
