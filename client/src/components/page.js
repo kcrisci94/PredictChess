@@ -216,6 +216,8 @@ class Page extends Component {
 
                {this.state.title === 'results' ?
                <div>
+                  <button type="button" className="analyze" onClick={this.game_mode}>View Games</button>
+                  <p>Please click the user that you want to analyze.</p>
                   <div className="flex-horiz">
                      <div className="flex-column">
                         <Game updateGame={this.updateGame} position={this.state.position} moves={this.state.moves} 
