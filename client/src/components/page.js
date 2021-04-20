@@ -105,6 +105,12 @@ class Page extends Component {
       });
    }
 
+   game_mode = () => {
+      this.setState({
+         title: "Game"
+      });
+   }
+
    compareDataPointYAscend = (dataPoint1, dataPoint2) => {
       return dataPoint1.y - dataPoint2.y;
    }
@@ -119,6 +125,8 @@ class Page extends Component {
       .then(res => {
          let options = {
             animationEnabled: true,
+            height: 300,
+            width: 500,
             title:{
                text:"Captures Made By Pieces"
             },
@@ -175,6 +183,7 @@ class Page extends Component {
             {this.state.title === 'Game' ?
                <div>
                   <button type="button" className="analyze" onClick={this.analysis_mode}>Analyze a User</button>
+                  <p>Download and play through games, or manually play moves</p>
                   <div className="flex-horiz">
                      <Options chess_uname={this.state.userInfo.chessUsername} userid={this.state.userInfo.id} analyze={this.analysis_mode}/> 
                      <div className="flex-column">
@@ -193,6 +202,7 @@ class Page extends Component {
                {this.state.title === 'Analyze' ?
                <div>
                   <div id="visible">
+                  <button type="button" className="viewgames" onClick={this.game_mode}>View Games</button>
                      <p>Please click the user that you want to analyze.</p>
                   </div>
                   <div className="flex-horiz">

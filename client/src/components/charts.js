@@ -16,12 +16,12 @@ class Controls extends React.Component {
       console.log(topCaptures);
       return (
         <div className="chart1">
-        <CanvasJSChart
+        <CanvasJSChart className="chartDisplay"
           options={options}
           // onRef = {ref => this.chart = ref}
         />
         <div className="results">
-           <p>The Player's Top 3 Capturing Pieces are: 
+           <p>The Player's Top 3 Capturing Pieces are:</p>
            <ul>
            {topCaptures.map((item, index) => 
               <li key={index} onClick={() => {this.props.updateDisplay(item.added_user);}}>
@@ -29,7 +29,8 @@ class Controls extends React.Component {
               </li>
            )}       
            </ul>
-           Try to take them out early, or block them with other pieces.
+           <p>
+              Try to take them out early, or block them with other pieces.
            </p>
         </div>
       </div>
