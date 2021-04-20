@@ -146,10 +146,10 @@ class Page extends Component {
                   { y: res.f, label: "f-pawn" },
                   { y: res.g, label: "g-pawn" },
                   { y: res.h, label: "h-pawn" },
-                  { y: res.queen, label: "queen" },
-                  { y: res.king, label: "king" },
-                  { y: res.rook/2, label: "rook" },
-                  { y: res.knight/2, label: "knight" },
+                  { y: res.queen, label: "Queen" },
+                  { y: res.king, label: "King" },
+                  { y: res.rook/2, label: "Rook" },
+                  { y: res.knight/2, label: "Knight" },
                   { y: res.bishopb, label: "Black Bishop" },
                   { y: res.bishopw, label: "White Bishop" }
                ]
