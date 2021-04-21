@@ -30,7 +30,9 @@ class Page extends Component {
          history: [],
          alllist: [],
          display: [], 
-         chart1: {}
+         chart1: {}, 
+         squares_taken: [],
+         squares_to_take: []
       };
    }
 
@@ -146,25 +148,28 @@ class Page extends Component {
                axisYType: "secondary",
                color: "#014D65",
                dataPoints: [
-                  { y: res.a, label: "a-pawn" },
-                  { y: res.b, label: "b-pawn" },
-                  { y: res.c, label: "c-pawn" },
-                  { y: res.d, label: "d-pawn" },
-                  { y: res.e, label: "e-pawn" },
-                  { y: res.f, label: "f-pawn" },
-                  { y: res.g, label: "g-pawn" },
-                  { y: res.h, label: "h-pawn" },
-                  { y: res.queen, label: "Queen" },
-                  { y: res.king, label: "King" },
-                  { y: res.rook/2, label: "Rook" },
-                  { y: res.knight/2, label: "Knight" },
-                  { y: res.bishopb, label: "Black Bishop" },
-                  { y: res.bishopw, label: "White Bishop" }
+                  { y: res.pieces_captured.a, label: "a-pawn" },
+                  { y: res.pieces_captured.b, label: "b-pawn" },
+                  { y: res.pieces_captured.c, label: "c-pawn" },
+                  { y: res.pieces_captured.d, label: "d-pawn" },
+                  { y: res.pieces_captured.e, label: "e-pawn" },
+                  { y: res.pieces_captured.f, label: "f-pawn" },
+                  { y: res.pieces_captured.g, label: "g-pawn" },
+                  { y: res.pieces_captured.h, label: "h-pawn" },
+                  { y: res.pieces_captured.queen, label: "Queen" },
+                  { y: res.pieces_captured.king, label: "King" },
+                  { y: res.pieces_captured.rook/2, label: "Rook" },
+                  { y: res.pieces_captured.knight/2, label: "Knight" },
+                  { y: res.pieces_captured.bishopb, label: "Black Bishop" },
+                  { y: res.pieces_captured.bishopw, label: "White Bishop" }
                ]
             }]}
-            
+         console.log(res.location_taken);   
          options.data[0].dataPoints.sort(this.compareDataPointYAscend);
-         this.setState({title: "results", chart1: options});
+         let arr1 = res.location_taken;
+         let arr2 = res.location_to_take;
+         
+         this.setState({title: "results", chart1: options, squares_taken: arr1, squares_to_take: arr2});
    });
 
    }
@@ -219,7 +224,7 @@ class Page extends Component {
                      
                      <SelectDisplay userid={this.state.userInfo.id} updateDisplay={this.updateDisplay} title={this.state.title} analyzeUser={this.analyzeUser}/>
                   </div>  
-                  <Charts chart1={this.state.chart1} />
+                  <Charts chart1={this.state.chart1} squaresTaken = {this.state.squares_taken} squaresToTake = {this.state.squares_to_take}/>
                </div> :null}
          </div>
       );

@@ -24,6 +24,7 @@
     "express": "^4.16.2",
     "mysql": "^2.18.1",
     "node-fetch": "^2.6.1",
+    "react-heatmap-grid": "^0.8.2",
     "xmlhttprequest": "^1.8.0"
   }
 }

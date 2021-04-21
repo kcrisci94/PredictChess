@@ -270,27 +270,74 @@ app.post('/analyzeUser', (req, res) => {
 
 const getNumCaptures = (result, uname) => {
    let i = 0; 
-   let counts = {queen: 0, knight: 0, bishopw: 0, bishopb: 0, rook: 0, king: 0, a: 0, b: 0, c: 0, d: 0, e:0, f: 0, g: 0, h:0}
+   let retObj = {location_to_take: [], location_taken: [], pieces_captured: {queen: 0, knight: 0, bishopw: 0, bishopb: 0, rook: 0, king: 0, a: 0, b: 0, c: 0, d: 0, e:0, f: 0, g: 0, h:0}}
    let playermoves = [];
+   let othermoves = []
+   let matrix = [];
+   let k;
+   for(k=0; k<8; k++) {
+         matrix[k] = new Array(8).fill(0);
+   }
+
+   let matrix2 = [];
+   for(k=0; k<8; k++) {
+         matrix2[k] = new Array(8).fill(0);
+   }
+
    for(i = 0; i < result.length; i++){
       let game = result[i];
       let allmoves = game.moves.split(" ");
       let j = 0;
+
+      /* Store user moves in 2 separate arrays */
       if(game.whiteName == uname){
          for(j = 0; j < allmoves.length; j++){
             if(j % 2 == 0){
                 playermoves.push(allmoves[j]);
+            }else{
+               othermoves.push(allmoves[j]);
             }
          }
       }else{
          for(j = 0; j < allmoves.length; j++){
             if(j % 2 != 0){
                 playermoves.push(allmoves[j]);
+            }else{
+               othermoves.push(allmoves[j]);
             }
          }
       }
       //console.log(playermoves);
-   
+
+      let square, square2, piece, piece2;
+      let column, row;
+
+      for(j = 0; j < othermoves.length; j++){
+         if(othermoves[j].includes("x")){
+            let pieceidx = othermoves[j].indexOf("x"); //get index of capturing piece
+            square2 = othermoves[j][pieceidx + 1];
+            row = othermoves[j][pieceidx + 2];
+               if(square2 == "a"){
+                  column = 0;
+               }else if(square2 == "b"){
+                  column = 1;
+               }else if(square2 == "c"){
+                  column = 2;
+               }else if(square2 == "d"){
+                  column = 3;
+               }else if(square2 == "e"){
+                  column = 4;
+               }else if(square2 == "f"){
+                  column = 5;
+               }else if(square2 == "g"){
+                  column = 6;
+               }else if(square2 == "h"){
+                  column = 7;
+               }
+
+               matrix2[column][row-1] = matrix2[column][row-1] + 1;
+            }
+      }
       for(j = 0; j < playermoves.length; j++){
          if(playermoves[j].includes("x")){
             let pieceidx = playermoves[j].indexOf("x"); //get index of capturing piece
@@ -299,57 +346,86 @@ const getNumCaptures = (result, uname) => {
             }else{
                pieceidx = pieceidx-1;
             }
-            let piece = playermoves[j][pieceidx];
+
+            // Determine where player likes to capture pieces
+            
+            
+            square = playermoves[j].slice(pieceidx + 2);
+            piece = playermoves[j][pieceidx];
+
+            if(square[0] == "a"){
+               column = 0;
+            }else if(square[0] == "b"){
+               column = 1;
+            }else if(square[0] == "c"){
+               column = 2;
+            }else if(square[0] == "d"){
+               column = 3;
+            }else if(square[0] == "e"){
+               column = 4;
+            }else if(square[0] == "f"){
+               column = 5;
+            }else if(square[0] == "g"){
+               column = 6;
+            }else if(square[0] == "h"){
+               column = 7;
+            }
+            
+            matrix[column][square[1]-1] = matrix[column][square[1]-1] + 1;
+
+            /* Determine captured  Piece*/
             if(piece == piece.toLowerCase()){ //pawn capture
                if(piece == "a"){
-                  counts.a = counts.a + 1;
+                  retObj.pieces_captured.a = retObj.pieces_captured.a + 1;
                }else if(piece == "b"){
-                  counts.b = counts.b + 1;
+                  retObj.pieces_captured.b = retObj.pieces_captured.b + 1;
                }else if(piece == "c"){
-                  counts.c = counts.c + 1;
+                  retObj.pieces_captured.c = retObj.pieces_captured.c + 1;
                }else if(piece == "d"){
-                  counts.d = counts.d + 1;
+                  retObj.pieces_captured.d = retObj.pieces_captured.d + 1;
                }else if(piece == "e"){
-                  counts.e = counts.e + 1;
+                  retObj.pieces_captured.e = retObj.pieces_captured.e + 1;
                }else if(piece == "f"){
-                  counts.f = counts.f + 1;
+                  retObj.pieces_captured.f = retObj.pieces_captured.f + 1;
                }else if(piece == "g"){
-                  counts.g = counts.g + 1;
+                  retObj.pieces_captured.g = retObj.pieces_captured.g + 1;
                }else if(piece == "h"){
-                  counts.h = counts.h + 1;
+                  retObj.pieces_captured.h = retObj.pieces_captured.h + 1;
                }
             }else{ // non-pawn capture
                if(piece == "N"){
-                  counts.knight = counts.knight + 1;
+                  retObj.pieces_captured.knight = retObj.pieces_captured.knight + 1;
                }else if(piece == "R"){
-                  counts.rook = counts.rook + 1;
+                  retObj.pieces_captured.rook = retObj.pieces_captured.rook + 1;
                }else if(piece == "Q"){
-                  counts.queen = counts.queen + 1;
+                  retObj.pieces_captured.queen = retObj.pieces_captured.queen + 1;
                }else if(piece == "B"){
-                  let square = playermoves[j].slice(pieceidx + 2);
                   if(square[0] == "a" || square[0] == "c" || square[0] == "e" || square[0] == "g"){
                      if(square[1] % 2 == 0){
-                        counts.bishopw = counts.bishopw + 1;
+                        retObj.pieces_captured.bishopw = retObj.pieces_captured.bishopw + 1;
                      }else{
-                        counts.bishopb = counts.bishopb + 1;
+                        retObj.pieces_captured.bishopb = retObj.pieces_captured.bishopb + 1;
                      }
                   }else if(square[0] == "b" || square[0] == "d" || square[0] == "f" || square[0] == "h"){
                      if(square[1] % 2 == 0){
-                        counts.bishopb = counts.bishopb + 1;
+                        retObj.pieces_captured.bishopb = retObj.pieces_captured.bishopb + 1;
                      }else{
-                        counts.bishopw = counts.bishopw + 1;
+                        retObj.pieces_captured.bishopw = retObj.pieces_captured.bishopw + 1;
                      }
 
                   }
                }else if(piece == "K"){
-                  counts.king = counts.king + 1;
+                  retObj.pieces_captured.king = retObj.pieces_captured.king + 1;
                }
             }
          }
       }
       playermoves = [];
+      othermoves = [];
    }
-   return counts;
+   retObj.location_to_take = matrix;
+   retObj.location_taken = matrix2;
+   return retObj;
    //res.send(result);
 
 }
