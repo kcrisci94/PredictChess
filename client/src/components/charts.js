@@ -5,6 +5,14 @@ const CanvasJSChart = CanvasJSReact.CanvasJSChart;
 const HeatMap = require('react-heatmap-grid').default;
 
 class Controls extends React.Component {
+   
+   componentDidMount(){
+      fetch('/get_prediction', {
+         method: 'POST',
+         headers: {'Content-Type': 'application/json; charset=utf-8'},
+         body: JSON.stringify({username: this.props.chessUsername})})
+         .then(res => console.log(res))
+   }
    top3Pieces = () => {
       let length = this.props.chart1.data[0].dataPoints.length;
       let options = this.props.chart1.data[0].dataPoints.slice(length - 3, length);

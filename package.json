@@ -22,9 +22,12 @@
     "concurrently": "^3.5.1",
     "cors": "^2.8.5",
     "express": "^4.16.2",
+    "flask": "^0.2.10",
     "mysql": "^2.18.1",
     "node-fetch": "^2.6.1",
+    "python": "^0.0.4",
     "react-heatmap-grid": "^0.8.2",
     "xmlhttprequest": "^1.8.0"
-  }
+  },
+  "proxy": "http://localhost:5000"
 }

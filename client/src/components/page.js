@@ -224,7 +224,7 @@ class Page extends Component {
                      
                      <SelectDisplay userid={this.state.userInfo.id} updateDisplay={this.updateDisplay} title={this.state.title} analyzeUser={this.analyzeUser}/>
                   </div>  
-                  <Charts chart1={this.state.chart1} squaresTaken = {this.state.squares_taken} squaresToTake = {this.state.squares_to_take}/>
+                  <Charts chart1={this.state.chart1} squaresTaken = {this.state.squares_taken} squaresToTake = {this.state.squares_to_take} chessUsername={this.state.userInfo.chessUsername}/>
                </div> :null}
          </div>
       );

@@ -119,6 +119,8 @@ const parseData = (data) => {
    for(var j = 0; j<data.length; j++){
       for(var k = 0; k<data[j].games.length; k++){
          var string = data[j].games[k].pgn;
+         var whiteData = data[j].games[k].white;
+         var blackData = data[j].games[k].black;
          var date = '';
          var white = '';
          var black = '';
@@ -135,8 +137,8 @@ const parseData = (data) => {
          string.replace(openings, (s, match) => {opening = s.split('"')[0].split("/")[1]})
          numMoves = moves.length;
 
-         var sql4 = `INSERT INTO games(url, datePlayed, whiteName, blackName, opening, winner, numMoves, moves) values('${data[j].games[k].url}','${date}', '${white}',
-                       '${black}', '${opening}', '${winner}', '${numMoves}', '${moves.join(' ')}')`;
+         var sql4 = `INSERT INTO games(url, datePlayed, whiteName, blackName, opening, winner, WhiteRating, BlackRating, numMoves, moves) values('${data[j].games[k].url}','${date}', '${white}',
+                       '${black}', '${opening}', '${winner}', '${whiteData.rating}','${blackData.rating}', '${numMoves}', '${moves.join(' ')}')`;
          db.query(sql4, (err, result) => {
             if(err){
                console.log("error inserting game \n" + err);
@@ -429,6 +431,17 @@ const getNumCaptures = (result, uname) => {
    //res.send(result);
 
 }
+
+app.post('/get_prediction', (req, res) => {
+   const username = req.body.username;
+   console.log("Calling python code");
+   const spawn = require("child_process").spawn;
+   const pythonProcess = spawn('python3', ["./model.py", username]);
+   pythonProcess.stdout.on('data', (data) => {
+      console.log(data.toString("ascii"));
+   });
+   res.send(null);
+});
 
 //this is the port number specified in client .json file
 const port = 5000;
