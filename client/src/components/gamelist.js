@@ -4,6 +4,7 @@ import "./gamelist.css";
 
 class Gamelist extends React.Component {
    
+
    render() {
       let list;
       list = this.props.display;
@@ -33,6 +34,9 @@ class Gamelist extends React.Component {
              ) : null}
              </tbody>
           </table>
+          <button type="button" className="getMyGames" onClick={this.props.decrementPage}>Previous Page</button>
+          <button type="button" className="getMyGames" onClick={this.props.incrementPage}>Next Page</button>
+
           <button type="button" className="getMyGames" onClick={this.props.getmygames}>Refresh My Games</button>
        </div>
      );
