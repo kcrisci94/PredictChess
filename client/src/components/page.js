@@ -7,6 +7,7 @@ import Signup from './signup';
 import Options from './options';
 import SelectDisplay from './selectdisplay';
 import Charts from './charts';
+import Model from './model';
 import * as CanvasJS from 'canvasjs';
 import './page.css';
 
@@ -32,7 +33,9 @@ class Page extends Component {
          display: [], 
          chart1: {}, 
          squares_taken: [],
-         squares_to_take: []
+         squares_to_take: [],
+         analyzeUser: '',
+         pageNum: 1
       };
    }
 
@@ -76,7 +79,10 @@ class Page extends Component {
       let list = this.state.alllist;
       let display = [];
       let j;
-      for(j=list.length-1; j>list.length-11; j--){
+      let maxResults = 10;
+      let pageNum = this.state.pageNum;
+      let starting = (list.length-1) - (maxResults*pageNum);
+      for(j=starting; j>starting-maxResults; j--){
          display.push(list[j]);
       }
       this.setState({display: display});
@@ -117,7 +123,29 @@ class Page extends Component {
       return dataPoint1.y - dataPoint2.y;
    }
 
+   incrementPagenum = () => {
+      let page = this.state.pageNum;
+      page = page + 1;
+      this.setState({
+          pageNum: page
+      })
+      this.setDisplay();
+   }
+
+   decrementPagenum = () => {
+       let page = this.state.pageNum;
+       if(page > 1){
+          page = page - 1;
+          this.setState({
+              pageNum: page
+          });
+       }
+       this.setDisplay();
+
+   }
+
    analyzeUser = (user) => {
+      this.setState({analyzeUser: user})
       fetch('/analyzeUser', {
          method: 'POST',
          headers: {'Content-Type': 'application/json; charset=utf-8'},
@@ -197,7 +225,7 @@ class Page extends Component {
                         <div className='moves'>
                            <p>{this.state.moves.join(" ")}</p>
                         </div>
-                        <Gamelist startGame={this.startGame} username={this.state.userInfo.chessUsername} setAlllist={this.setAlllist} setDisplay={this.setDisplay} display={this.state.display} getmygames={this.setDisplay}/>
+                        <Gamelist incrementPage={this.incrementPagenum} decrementPage={this.decrementPagenum} startGame={this.startGame} username={this.state.userInfo.chessUsername} setAlllist={this.setAlllist} setDisplay={this.setDisplay} display={this.state.display} getmygames={this.setDisplay}/>
                      </div>
                      <SelectDisplay userid={this.state.userInfo.id} updateDisplay={this.updateDisplay} title={this.state.title} analyzeUser={this.analyzeUser}/>
                   </div>
@@ -225,6 +253,7 @@ class Page extends Component {
                      <SelectDisplay userid={this.state.userInfo.id} updateDisplay={this.updateDisplay} title={this.state.title} analyzeUser={this.analyzeUser}/>
                   </div>  
                   <Charts chart1={this.state.chart1} squaresTaken = {this.state.squares_taken} squaresToTake = {this.state.squares_to_take} chessUsername={this.state.userInfo.chessUsername}/>
+                  <Model analyzeUser={this.state.analyzeUser} me={this.state.userInfo.chessUsername}/>
                </div> :null}
          </div>
       );

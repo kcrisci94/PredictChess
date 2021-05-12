@@ -432,15 +432,78 @@ const getNumCaptures = (result, uname) => {
 
 }
 
-app.post('/get_prediction', (req, res) => {
-   const username = req.body.username;
-   console.log("Calling python code");
-   const spawn = require("child_process").spawn;
-   const pythonProcess = spawn('python3', ["./model.py", username]);
-   pythonProcess.stdout.on('data', (data) => {
-      console.log(data.toString("ascii"));
+app.post('/get_latest_ratings', (req, res) => {
+   const myuname = req.body.myuname;
+   const oppuname = req.body.oppuname;
+   const sql1 = `select * from games where whiteName = '${myuname}' or blackName = '${myuname}'
+   ORDER BY id DESC LIMIT 1`;
+   const sql2 = `select * from games where whiteName = '${oppuname}' or blackName = '${oppuname}'
+   ORDER BY id DESC LIMIT 1`;
+  
+   ratings = {myrating: 0, opprating: 0}
+   db.query(sql1, (err, result) => {
+      if(err) throw err;
+      if(result){
+         console.log(result);
+         if(result.whiteName == myuname){
+            ratings.myrating = result.WhiteRating;
+         }else{
+            ratings.myrating = result.BlackRating;
+         }
+         db.query(sql2, (err2, result2) => {
+            if(err2) throw err2;
+            if(result2){
+               console.log(result2);  
+               if(result2.whiteName == oppuname){
+                  ratings.opprating = WhiteRating;
+               }else{
+                  ratings.opprating = BlackRating;
+               }
+               res.send(ratings);
+            }else{
+               console.log("opponent rating not found");
+               res.send(null);
+            }
+         });
+      }else{
+         console.log("my rating not found");
+         res.send(null);
+      }
    });
+
    res.send(null);
+});
+
+app.get('/get_openings', (req, res) => {
+   const sql = `select DISTINCT opening from games`;
+   db.query(sql1, (err, result) => {
+      if(err) throw err;
+      if(result){
+         res.send(result);
+      }else{
+         console.log("Couldn't get openings");
+         res.send(null);
+      }
+})});
+
+app.post('/get_prediction', (req, res) => {
+   const username = req.body.myuname;
+   const other = req.body.oppuname;
+   const color = req.body.color;
+   var dataToSend;
+   console.log("Calling python code");
+   console.log("Username: ", username, " opponent: ", other, " Color: ", color);
+   const spawn = require("child_process").spawn;
+   const pythonProcess = spawn('python3', ["./model.py", other, username, color]);
+  // const pythonProcess = spawn('python3', ["./test.py"]);
+   pythonProcess.stdout.on('data', (data) => {
+      console.log(data.toString());
+      dataToSend = data.toString();
+   });
+   pythonProcess.on('close', (code) => {
+      console.log(`child process close all stdio with code ${code}`);
+      res.send(JSON.stringify(dataToSend))
+   });
 });
 
 //this is the port number specified in client .json file
